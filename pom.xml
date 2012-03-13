@@ -10,7 +10,7 @@
 
 	<groupId>com.despegar.maven.plugin</groupId>
 	<artifactId>maven-m2e-codestyle</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<name>Maven M2E Code-style plugin</name>
