@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -60,20 +61,41 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	private HttpClient httpClient = new DefaultHttpClient();
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		File sttDir = new File(baseDir, ECLIPSE_SETTINGS_FOLDER);
-		if (!sttDir.exists()) {
-			getLog().info("Created [" + ECLIPSE_SETTINGS_FOLDER + "] folder!");
-			sttDir.mkdir();
+		if (isRunningFromEclipse()) {
+			getLog().info(
+					"Using code-style base-url [" + codeStyleBaseUrl + "]...");
+
+			File sttDir = new File(baseDir, ECLIPSE_SETTINGS_FOLDER);
+			if (sttDir.exists()) {
+				sttDir.mkdir();
+			}
+
+			configureJDTUIPrefs(sttDir, codeStyleBaseUrl);
+			configureJDTCorePrefs(sttDir, codeStyleBaseUrl);
+			configureCorePrefs(sttDir, codeStyleBaseUrl);
+
+			getLog().info("Refreshing newly created settings...");
+			buildContext.refresh(sttDir);
+		} else {
+			getLog().info("Eclipse not detected, exiting!");
 		}
-		
-		getLog().info("Using code-style base-url [" + codeStyleBaseUrl + "]...");
+	}
 
-		configureJDTUIPrefs(sttDir, codeStyleBaseUrl);
-		configureJDTCorePrefs(sttDir, codeStyleBaseUrl);
-		configureCorePrefs(sttDir, codeStyleBaseUrl);
+	private boolean isRunningFromEclipse() {
+		int hitCount = 0;
+		for (Entry<Object, Object> p : System.getProperties().entrySet()) {
+			String key = p.getKey().toString().trim().toLowerCase();
+			if (key.startsWith("eclipse.vmargs")
+					|| key.startsWith("eclipse.vm")
+					|| key.startsWith("eclipse.startTime")
+					|| key.startsWith("eclipse.commands")
+					|| key.startsWith("eclipse.launcher")) {
+				hitCount++;
+			}
+			// getLog().info(">> " + p.getKey() + " = " + p.getValue());
+		}
 
-		getLog().info("Refreshing newly created settings...");
-		buildContext.refresh(sttDir);
+		return hitCount >= 3;
 	}
 
 	private void configureJDTUIPrefs(File dir, String baseUrl) {
@@ -94,42 +116,52 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		String content = getUrlContentAsString(baseUrl + "/" + fileName);
 
 		if (content != null) {
-			String md5New = HashHelper.md5(cleanUpString(content));
-			getLog().info("Fingerprint for [" + fileName + "] = {" + md5New + "}");
 
-			File file = new File(dir, fileName);
-			String md5Old = HashHelper.md5(cleanUpString(readTextFile(file)));
-			getLog().info("Fingerprint for [" + fileName + "] = {" + md5Old + "}");
+			File target = new File(dir, fileName);
+			if (target.exists()) {
+				String md5Old = HashHelper
+						.md5(cleanUpString(readTextFile(target)));
+				getLog().info(
+						"Fingerprint for [" + fileName + "] = {" + md5Old + "}");
 
-			if (!md5New.equals(md5Old)) {
-				writeTextFile(file, content);
-				getLog().info("File [" + fileName + "] written.");
+				String md5New = HashHelper.md5(cleanUpString(content));
+				getLog().info(
+						"Fingerprint for [" + fileName + "] = {" + md5New + "}");
+
+				if (!md5New.equals(md5Old)) {
+					writeTextFile(target, content);
+					getLog().info("File [" + fileName + "] updated.");
+				} else {
+					getLog().info("File [" + fileName + "] didn't change!");
+				}
 			} else {
-				getLog().info("File [" + fileName + "] didn't change!");
+				writeTextFile(target, content);
+				getLog().info("New file [" + fileName + "] created.");
 			}
 		}
 	}
 
 	private String readTextFile(File file) {
-		FileReader inFile = null;
 		StringBuilder sb = new StringBuilder();
-		try {
-			inFile = new FileReader(file);
-			BufferedReader in = new BufferedReader(inFile);
-			String text = null;
-			while ((text = in.readLine()) != null) {
-				sb.append(text).append(System.getProperty("line.separator"));
-			}
-		} catch (IOException e) {
-			getLog().warn("Exception reading file [" + file.getName() + "]", e);
-		} finally {
-			if (inFile != null) {
-				try {
-					inFile.close();
-				} catch (Exception e) {
+
+		if (file.exists()) {
+			FileReader inFile = null;
+			try {
+				inFile = new FileReader(file);
+				BufferedReader in = new BufferedReader(inFile);
+				String text = null;
+				while ((text = in.readLine()) != null) {
+					sb.append(text)
+							.append(System.getProperty("line.separator"));
 				}
+			} catch (IOException e) {
+				getLog().warn(
+						"Exception reading file [" + file.getName() + "]", e);
+			} finally {
+				IOUtils.closeQuietly(inFile);
 			}
 		}
+
 		return sb.toString();
 	}
 
@@ -142,12 +174,7 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		} catch (IOException e) {
 			getLog().warn("Exception writing file [" + file.getName() + "]", e);
 		} finally {
-			if (outFile != null) {
-				try {
-					outFile.close();
-				} catch (Exception e) {
-				}
-			}
+			IOUtils.closeQuietly(outFile);
 		}
 	}
 
@@ -156,15 +183,15 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		StringBuilder sb = new StringBuilder();
 		String line = null;
 		try {
-			while((line = br.readLine()) != null) {
+			while ((line = br.readLine()) != null) {
 				sb.append(line).append("\n");
 			}
 		} catch (IOException e) {
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	private String getUrlContentAsString(String url) {
 
 		HttpResponse httpResponse = null;
