@@ -22,7 +22,7 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.despegar.framework.hash.HashHelper;
 
 /**
- * @phase initialize
+ * @phase process-resources
  * @goal configure
  * 
  * @author gkondolf@despegar.com
