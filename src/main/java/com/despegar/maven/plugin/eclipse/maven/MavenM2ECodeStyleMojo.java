@@ -1,4 +1,4 @@
-package com.despegar.framework.eclipse.maven;
+package com.despegar.maven.plugin.eclipse.maven;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +20,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
-import com.despegar.framework.hash.HashHelper;
+import com.despegar.tools.hash.HashHelper;
 
 /**
  * @phase process-resources
