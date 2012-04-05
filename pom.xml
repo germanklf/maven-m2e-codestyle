@@ -130,8 +130,6 @@
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
-		<!-- Not used yet -->
-		<!-- 
 		<profile>
 			<id>release-sign-artifacts</id>
 			<activation>
@@ -158,6 +156,5 @@
 				</plugins>
 			</build>
 		</profile>
-		 -->
 	</profiles>
 </project>
