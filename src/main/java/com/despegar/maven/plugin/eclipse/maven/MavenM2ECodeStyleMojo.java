@@ -62,20 +62,27 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (isRunningFromEclipse()) {
-			getLog().info(
-					"Using code-style base-url [" + codeStyleBaseUrl + "]...");
+			File pomFile = new File(baseDir, "pom.xml");
+			if (buildContext.hasDelta(pomFile) || !buildContext.isIncremental()) {
+				getLog().info(
+						"Using code-style base-url [" + codeStyleBaseUrl
+								+ "]...");
 
-			File sttDir = new File(baseDir, ECLIPSE_SETTINGS_FOLDER);
-			if (sttDir.exists()) {
-				sttDir.mkdir();
+				File sttDir = new File(baseDir, ECLIPSE_SETTINGS_FOLDER);
+				if (sttDir.exists()) {
+					sttDir.mkdir();
+				}
+
+				configureJDTUIPrefs(sttDir, codeStyleBaseUrl);
+				configureJDTCorePrefs(sttDir, codeStyleBaseUrl);
+				configureCorePrefs(sttDir, codeStyleBaseUrl);
+
+				getLog().info("Refreshing newly created settings...");
+				buildContext.refresh(sttDir);
+			} else {
+				getLog().info(
+						"pom.xml didn't change or incremental build detected, nothing to do.");
 			}
-
-			configureJDTUIPrefs(sttDir, codeStyleBaseUrl);
-			configureJDTCorePrefs(sttDir, codeStyleBaseUrl);
-			configureCorePrefs(sttDir, codeStyleBaseUrl);
-
-			getLog().info("Refreshing newly created settings...");
-			buildContext.refresh(sttDir);
 		} else {
 			getLog().info("Eclipse not detected, exiting!");
 		}
