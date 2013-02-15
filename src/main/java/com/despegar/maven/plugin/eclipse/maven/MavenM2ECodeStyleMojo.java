@@ -15,6 +15,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -58,7 +59,7 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	 */
 	private File baseDir;
 
-	private HttpClient httpClient = new DefaultHttpClient();
+	private HttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (isRunningFromEclipse()) {
