@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Scanner;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -169,6 +172,7 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 			FileReader inFile = null;
 			try {
 				inFile = new FileReader(file);
+				@SuppressWarnings("resource")
 				BufferedReader in = new BufferedReader(inFile);
 				String text = null;
 				while ((text = in.readLine()) != null) {
@@ -230,8 +234,35 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		return sb.toString();
 	}
 
+	/**
+	 * Downloads the content URL and puts it into a String. If the URL string
+	 * provided is not absolute, it will look for it relative to the classpath
+	 * instead of downloading off the Internet.
+	 * 
+	 * @param url
+	 * @return
+	 */
 	private String getUrlContentAsString(String url) {
 
+		if (!URI.create(url).isAbsolute()) {
+			try {
+				InputStream stream = getClass().getClassLoader().getResourceAsStream(url);
+				if (stream == null) {
+					return null;
+				}
+				Scanner scanner = new Scanner(stream).useDelimiter("\\A");
+				final String response;
+				if (scanner.hasNext()) {
+					response = scanner.next();
+				} else {
+					response = null;
+				}
+				stream.close();
+				return response;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		HttpResponse httpResponse = null;
 		try {
 			httpResponse = httpClient.execute(new HttpGet(url));
