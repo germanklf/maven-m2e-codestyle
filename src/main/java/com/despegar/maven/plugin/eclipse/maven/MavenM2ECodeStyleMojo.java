@@ -47,7 +47,7 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	/**
 	 * Code style base url.
 	 * 
-	 * @parameter expression="${codeStyleBaseUrl}"
+	 * @parameter property="codeStyleBaseUrl"
 	 * @required
 	 */
 	private String codeStyleBaseUrl;
@@ -55,7 +55,7 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	/**
 	 * Base Directory.
 	 * 
-	 * @parameter expression="${project.basedir}"
+	 * @parameter property="project.basedir"
 	 * @required
 	 */
 	private File baseDir;
