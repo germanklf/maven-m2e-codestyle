@@ -38,6 +38,9 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	private static final String CORE_PREFS_FILE = "org.eclipse.core.resources.prefs";
 	private static final String JDT_CORE_PREFS_FILE = "org.eclipse.jdt.core.prefs";
 	private static final String JDT_UI_PREFS_FILE = "org.eclipse.jdt.ui.prefs";
+	private static final String WST_JSDT_CORE_PREFS_FILE = "org.eclipse.wst.jsdt.core.prefs";
+	private static final String WST_JSDT_UI_PREFS_FILE = "org.eclipse.wst.jsdt.ui.prefs";
+	
 
 	/**
 	 * @component
@@ -75,6 +78,8 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 					sttDir.mkdir();
 				}
 
+				configureJSDTUIPrefs(sttDir, codeStyleBaseUrl);
+				configureJSDTCorePrefs(sttDir, codeStyleBaseUrl);
 				configureJDTUIPrefs(sttDir, codeStyleBaseUrl);
 				configureJDTCorePrefs(sttDir, codeStyleBaseUrl);
 				configureCorePrefs(sttDir, codeStyleBaseUrl);
@@ -105,6 +110,14 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		}
 
 		return hitCount >= 3;
+	}
+
+	private void configureJSDTUIPrefs(File dir, String baseUrl) {
+		downloadAndWriteFile(dir, baseUrl, WST_JSDT_UI_PREFS_FILE);
+	}
+
+	private void configureJSDTCorePrefs(File dir, String baseUrl) {
+		downloadAndWriteFile(dir, baseUrl, WST_JSDT_CORE_PREFS_FILE);
 	}
 
 	private void configureJDTUIPrefs(File dir, String baseUrl) {
