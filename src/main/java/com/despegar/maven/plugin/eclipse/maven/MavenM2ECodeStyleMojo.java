@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -173,12 +174,29 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 		return sb.toString();
 	}
 
+	/**
+	 * Writes the data to the file. If the file exists, it will merge the
+	 * contents.
+	 * 
+	 * @param file
+	 *            file to update
+	 * @param content
+	 *            content
+	 */
 	private void writeTextFile(File file, String content) {
+		Properties p = new Properties();
 		FileWriter outFile = null;
 		try {
+			if (file.exists()) {
+				FileReader reader = new FileReader(file);
+				p.load(reader);
+				reader.close();
+			}
+			StringReader contentReader = new StringReader(content);
+			p.load(contentReader);
+			contentReader.close();
 			outFile = new FileWriter(file);
-			PrintWriter out = new PrintWriter(outFile);
-			out.write(content);
+			p.store(outFile, "Built by maven-m2e-codestyle");
 		} catch (IOException e) {
 			getLog().warn("Exception writing file [" + file.getName() + "]", e);
 		} finally {
