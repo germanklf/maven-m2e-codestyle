@@ -8,14 +8,14 @@
     </parent>
     <groupId>net.trajano.mojo</groupId>
     <artifactId>m2e-codestyle-maven-plugin</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>maven-plugin</packaging>
     <name>Maven M2E Code-style plugin</name>
     <description>M2E 1.0+ compatible to configure code-style and save-actions for Eclipse.</description>
     <scm>
         <connection>scm:git:https://github.com/trajano/${project.artifactId}</connection>
         <developerConnection>scm:git:ssh://git@github.com/trajano/${project.artifactId}.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>m2e-codestyle-maven-plugin-1.1.0</tag>
     </scm>
     <distributionManagement>
         <site>
