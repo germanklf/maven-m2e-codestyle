@@ -1,9 +1,11 @@
 package com.despegar.maven.plugin.eclipse.maven;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -17,8 +19,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -65,7 +67,9 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	 */
 	private File baseDir;
 
-	private HttpClient httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
+	private HttpClient httpClient = HttpClientBuilder.create()
+			.setConnectionManager((new PoolingHttpClientConnectionManager()))
+			.build();
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (isRunningFromEclipse()) {
@@ -201,22 +205,20 @@ public class MavenM2ECodeStyleMojo extends AbstractMojo {
 	 */
 	private void writeTextFile(File file, String content) {
 		Properties p = new Properties();
-		FileWriter outFile = null;
+		FileOutputStream out = null;
 		try {
 			if (file.exists()) {
-				FileReader reader = new FileReader(file);
-				p.load(reader);
-				reader.close();
+				FileInputStream in = new FileInputStream(file);
+				p.load(in);
+				in.close();
 			}
-			StringReader contentReader = new StringReader(content);
-			p.load(contentReader);
-			contentReader.close();
-			outFile = new FileWriter(file);
-			p.store(outFile, "Built by maven-m2e-codestyle");
+			p.load(new ByteArrayInputStream(content.getBytes()));
+			out = new FileOutputStream(file);
+			p.store(out, "Built by maven-m2e-codestyle");
 		} catch (IOException e) {
 			getLog().warn("Exception writing file [" + file.getName() + "]", e);
 		} finally {
-			IOUtils.closeQuietly(outFile);
+			IOUtils.closeQuietly(out);
 		}
 	}
 
