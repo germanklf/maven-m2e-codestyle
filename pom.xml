@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.trajano</groupId>
         <artifactId>trajano</artifactId>
-        <version>8</version>
+        <version>9-SNAPSHOT</version>
     </parent>
     <groupId>net.trajano.mojo</groupId>
     <artifactId>m2e-codestyle-maven-plugin</artifactId>
@@ -21,7 +21,7 @@
         <site>
             <id>gh-pages</id>
             <name>Trajano GitHub Pages</name>
-            <url>git:ssh://git@github.com/trajano/${project.artifactId}.git?gh-pages#</url>
+            <url>github:http://site.trajano.net/${project.artifactId}/</url>
         </site>
     </distributionManagement>
     <properties>
@@ -103,7 +103,6 @@
                         <phase>process-classes</phase>
                     </execution>
                 </executions>
-                <configuration/>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
