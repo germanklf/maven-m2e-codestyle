@@ -37,8 +37,6 @@ import com.despegar.tools.hash.HashHelper;
 public class MavenM2ECodeStyleMojo extends AbstractMojo {
 
 	private static final String ECLIPSE_SETTINGS_FOLDER = ".settings";
-	// private static final String MAVEN_CODE_STYLE_BASE_URL_PROPERTY =
-	// "m2e.codestyle.base.url";
 	private static final String CORE_PREFS_FILE = "org.eclipse.core.resources.prefs";
 	private static final String JDT_CORE_PREFS_FILE = "org.eclipse.jdt.core.prefs";
 	private static final String JDT_UI_PREFS_FILE = "org.eclipse.jdt.ui.prefs";
