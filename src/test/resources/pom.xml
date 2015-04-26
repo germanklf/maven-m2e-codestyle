@@ -15,6 +15,13 @@
 					<destDir>target/settings</destDir>
 					<codeStyleBaseUrl>codestyle/</codeStyleBaseUrl>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>net.trajano</groupId>
+						<artifactId>coding-standards</artifactId>
+						<version>2.0.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

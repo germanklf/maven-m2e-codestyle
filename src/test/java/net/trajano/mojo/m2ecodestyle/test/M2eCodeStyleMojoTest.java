@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -28,8 +29,19 @@ public class M2eCodeStyleMojoTest {
 
         final File testPom = new File("src/test/resources/pom.xml");
         assertTrue(testPom.exists());
-        final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
-        assertNotNull(mojo);
-        mojo.execute();
+
+        final File tmp = File.createTempFile("test", "test");
+        tmp.delete();
+        try {
+            tmp.mkdir();
+            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            assertNotNull(mojo);
+            rule.setVariableValueToObject(mojo, "destDir", tmp);
+            mojo.execute();
+            assertTrue(tmp.exists());
+            assertTrue("Missing org.eclipse.jdt.core.prefs", new File(tmp, "org.eclipse.jdt.core.prefs").exists());
+        } finally {
+            FileUtils.deleteDirectory(tmp);
+        }
     }
 }
