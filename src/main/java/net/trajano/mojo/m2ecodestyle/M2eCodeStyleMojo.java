@@ -89,11 +89,12 @@ public class M2eCodeStyleMojo extends AbstractMojo {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void execute() throws MojoExecutionException,
         MojoFailureException {
 
         if (System.getProperty("eclipse.startTime") == null) {
-            getLog().warn(String.format("'eclipse.startTime' was not defined, may not be running in Eclipse.", destDir));
+            getLog().warn("'eclipse.startTime' was not defined, may not be running in Eclipse.");
             if (!destDir.exists()) {
                 getLog().warn(String.format("%s is missing it will not be created as plugin is not running in Eclipse", destDir));
                 return;
