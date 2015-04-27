@@ -36,10 +36,10 @@ public class M2eCodeStyleMojo extends AbstractMojo {
      * Default list of <em>prefs</em> files that are related to code styles.
      */
     private static final String[] DEFAULT_PREFS = { "org.eclipse.core.resources.prefs",
-            "org.eclipse.jdt.core.prefs",
-            "org.eclipse.jdt.ui.prefs",
-            "org.eclipse.wst.jsdt.core.prefs",
-            "org.eclipse.wst.jsdt.ui.prefs", };
+        "org.eclipse.jdt.core.prefs",
+        "org.eclipse.jdt.ui.prefs",
+        "org.eclipse.wst.jsdt.core.prefs",
+        "org.eclipse.wst.jsdt.ui.prefs", };
 
     /**
      * Build context.
@@ -91,8 +91,7 @@ public class M2eCodeStyleMojo extends AbstractMojo {
      * {@inheritDoc}
      */
     @Override
-    public void execute() throws MojoExecutionException,
-        MojoFailureException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
 
         if (System.getProperty("eclipse.startTime") == null) {
             getLog().warn("'eclipse.startTime' was not defined, may not be running in Eclipse.");

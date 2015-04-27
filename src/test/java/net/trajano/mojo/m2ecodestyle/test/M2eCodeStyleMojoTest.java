@@ -38,7 +38,8 @@ public class M2eCodeStyleMojoTest {
             rule.setVariableValueToObject(mojo, "destDir", tmp);
             mojo.execute();
             assertTrue(tmp.exists());
-            assertTrue("Missing org.eclipse.jdt.core.prefs", new File(tmp, "org.eclipse.jdt.core.prefs").exists());
+            assertTrue("Missing org.eclipse.jdt.core.prefs",
+                new File(tmp, "org.eclipse.jdt.core.prefs").exists());
         } finally {
             FileUtils.deleteDirectory(tmp);
         }
