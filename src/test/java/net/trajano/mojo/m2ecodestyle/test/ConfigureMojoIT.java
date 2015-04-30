@@ -13,14 +13,14 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import net.trajano.mojo.m2ecodestyle.M2eCodeStyleMojo;
+import net.trajano.mojo.m2ecodestyle.ConfigureMojo;
 
 /**
  * Tests using the remote retrieval method.
  *
  * @author Archimedes Trajano
  */
-public class M2eCodeStyleMojoIT {
+public class ConfigureMojoIT {
 
     @BeforeClass
     public static void setProperties() {
@@ -48,7 +48,7 @@ public class M2eCodeStyleMojoIT {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             assertNotNull(mojo);
             rule.setVariableValueToObject(mojo, "destDir", tmp);
             rule.setVariableValueToObject(mojo, "codeStyleBaseUrl", ":");
@@ -68,7 +68,7 @@ public class M2eCodeStyleMojoIT {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             assertNotNull(mojo);
             rule.setVariableValueToObject(mojo, "destDir", tmp);
             mojo.execute();
@@ -89,7 +89,7 @@ public class M2eCodeStyleMojoIT {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             assertNotNull(mojo);
             rule.setVariableValueToObject(mojo, "destDir", tmp);
             rule.setVariableValueToObject(mojo, "codeStyleBaseUrl", "http://foo.bar");

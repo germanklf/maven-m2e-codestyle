@@ -15,9 +15,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import net.trajano.mojo.m2ecodestyle.M2eCodeStyleMojo;
+import net.trajano.mojo.m2ecodestyle.ConfigureMojo;
 
-public class M2eCodeStyleMojoTest {
+public class ConfigureMojoTest {
 
     @Rule
     public MojoRule rule = new MojoRule();
@@ -33,7 +33,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             assertNotNull(mojo);
             rule.setVariableValueToObject(mojo, "destDir", tmp);
             mojo.execute();
@@ -61,7 +61,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             assertNotNull(mojo);
             final File settingsFolder = new File(tmp, "settings");
             rule.setVariableValueToObject(mojo, "destDir", settingsFolder);
@@ -85,7 +85,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             final Log log = mock(Log.class);
             mojo.setLog(log);
             rule.setVariableValueToObject(mojo, "destDir", tmp);
@@ -114,7 +114,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             final Log log = mock(Log.class);
             mojo.setLog(log);
             assertNotNull(mojo);
@@ -145,7 +145,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             final Log log = mock(Log.class);
             mojo.setLog(log);
             assertNotNull(mojo);
@@ -178,7 +178,7 @@ public class M2eCodeStyleMojoTest {
         tmp.delete();
         try {
             tmp.mkdir();
-            final M2eCodeStyleMojo mojo = (M2eCodeStyleMojo) rule.lookupMojo("configure", testPom);
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
             final Log log = mock(Log.class);
             mojo.setLog(log);
             assertNotNull(mojo);
