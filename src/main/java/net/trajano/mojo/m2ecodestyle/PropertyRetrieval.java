@@ -3,7 +3,6 @@ package net.trajano.mojo.m2ecodestyle;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -19,6 +18,9 @@ public interface PropertyRetrieval {
      * @param destDir
      *            destination directory containing the prefs file.
      * @throws URISyntaxException
+     *             thrown when there is invalid input for the URI provided.
+     * @throws IOException
+     *             I/O error
      */
         void fetchAndMerge(final URI codeStyleBaseUri,
             final String prefsFile,
@@ -29,11 +31,13 @@ public interface PropertyRetrieval {
      * base URI.
      *
      * @param codeStyleBaseUri
+     *            code style base URI
      * @param prefsFile
+     *            prefs file to look up
      * @return stream or <code>null</code> if the target is not available.
-     * @throws MalformedURLException
      * @throws IOException
+     *             I/O error
      */
         InputStream openPreferenceStream(final URI codeStyleBaseUri,
-            final String prefsFile) throws MalformedURLException, IOException;
+            final String prefsFile) throws IOException;
 }

@@ -15,7 +15,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
@@ -74,13 +73,6 @@ public class ConfigureMojo extends AbstractMojo {
      */
     @Parameter(required = false)
     private List<String> prefsFiles;
-
-    /**
-     * The Maven Project.
-     */
-    @Parameter(defaultValue = "${project}",
-        readonly = true)
-    private MavenProject project;
 
     /**
      * Injected property retrieval component.

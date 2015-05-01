@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
@@ -18,6 +17,9 @@ import javax.inject.Singleton;
 import org.codehaus.plexus.util.io.URLInputStreamFacade;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+/**
+ * Default implementation of {@link PropertyRetrieval}
+ */
 @Singleton
 @Named
 public class DefaultPropertyRetrieval implements PropertyRetrieval {
@@ -29,15 +31,7 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
     private BuildContext buildContext;
 
     /**
-     * Fetch and merge the preferences file.
-     *
-     * @param codeStyleBaseUri
-     *            base URI
-     * @param prefsFile
-     *            prefs file being processed
-     * @param destDir
-     *            destination directory containing the prefs file.
-     * @throws URISyntaxException
+     * {@inheritDoc}
      */
     @Override
     public void fetchAndMerge(final URI codeStyleBaseUri,
@@ -66,18 +60,11 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
     }
 
     /**
-     * Create an input stream pointing to the prefs file inside the code style
-     * base URI.
-     *
-     * @param codeStyleBaseUri
-     * @param prefsFile
-     * @return stream or <code>null</code> if the target is not available.
-     * @throws MalformedURLException
-     * @throws IOException
+     * {@inheritDoc}
      */
     @Override
     public InputStream openPreferenceStream(final URI codeStyleBaseUri,
-        final String prefsFile) throws MalformedURLException, IOException {
+        final String prefsFile) throws IOException {
 
         final URI resolved = codeStyleBaseUri.resolve(prefsFile);
         try {
