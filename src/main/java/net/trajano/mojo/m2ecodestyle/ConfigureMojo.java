@@ -33,18 +33,21 @@ import org.xml.sax.InputSource;
 /**
  * Configures Eclipse before any builds.
  */
-@Mojo(name = "configure", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true, requiresOnline = false)
+@Mojo(name = "configure",
+    defaultPhase = LifecyclePhase.INITIALIZE,
+    threadSafe = true,
+    requiresOnline = false)
 public class ConfigureMojo extends AbstractMojo {
 
     /**
      * Default list of <em>prefs</em> files that are related to code styles.
      */
     private static final String[] DEFAULT_PREFS = {
-            "org.eclipse.core.resources.prefs",
-            PreferenceFileName.JDT_CORE,
-            PreferenceFileName.JDT_UI,
-            PreferenceFileName.JSDT_CORE,
-            PreferenceFileName.JSDT_UI,
+        "org.eclipse.core.resources.prefs",
+        PreferenceFileName.JDT_CORE,
+        PreferenceFileName.JDT_UI,
+        PreferenceFileName.JSDT_CORE,
+        PreferenceFileName.JSDT_UI,
     };
 
     /**
@@ -75,7 +78,8 @@ public class ConfigureMojo extends AbstractMojo {
     /**
      * The directory that contains the Eclipse settings.
      */
-    @Parameter(defaultValue = "${basedir}/.settings", required = true)
+    @Parameter(defaultValue = "${basedir}/.settings",
+        required = true)
     private File destDir;
 
     /**
@@ -176,7 +180,8 @@ public class ConfigureMojo extends AbstractMojo {
      * {@inheritDoc}
      */
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException,
+        MojoFailureException {
 
         if (System.getProperty("eclipse.startTime") == null) {
             getLog().warn("'eclipse.startTime' was not defined, may not be running in Eclipse.");
@@ -229,7 +234,7 @@ public class ConfigureMojo extends AbstractMojo {
      * @throws URISyntaxException
      */
     public void fetchAndMerge(final URI codeStyleBaseUri,
-            final String prefsFile) {
+        final String prefsFile) {
 
         try {
             retrieval.fetchAndMerge(codeStyleBaseUri, prefsFile, destDir);
@@ -272,7 +277,7 @@ public class ConfigureMojo extends AbstractMojo {
      * @return profile element
      */
     private Element handleXmlPreferenceMerge(final String url,
-            final String prefsFile) throws MojoExecutionException {
+        final String prefsFile) throws MojoExecutionException {
 
         final XPathFactory xpf = XPathFactory.newInstance();
         try {
@@ -313,8 +318,8 @@ public class ConfigureMojo extends AbstractMojo {
      * @throws MojoExecutionException
      */
     private void setPreferenceValue(final String url,
-            final String prefsFile,
-            final String key) throws MojoExecutionException {
+        final String prefsFile,
+        final String key) throws MojoExecutionException {
 
         try {
             final Properties prop = new Properties();

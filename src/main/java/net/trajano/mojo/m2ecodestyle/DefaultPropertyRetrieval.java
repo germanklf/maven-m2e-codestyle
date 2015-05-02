@@ -21,7 +21,8 @@ import org.sonatype.plexus.build.incremental.BuildContext;
  */
 @Singleton
 @Named
-public class DefaultPropertyRetrieval implements PropertyRetrieval {
+public class DefaultPropertyRetrieval implements
+    PropertyRetrieval {
 
     /**
      * Build context.
@@ -34,8 +35,8 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
      */
     @Override
     public void fetchAndMerge(final URI codeStyleBaseUri,
-            final String prefsFile,
-            final File destDir) throws IOException {
+        final String prefsFile,
+        final File destDir) throws IOException {
 
         final File destFile = new File(destDir, prefsFile);
         final Properties props = new Properties();
@@ -85,7 +86,7 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
      */
     @Override
     public InputStream openPreferenceStream(final URI codeStyleBaseUri,
-            final String prefsFile) throws IOException {
+        final String prefsFile) throws IOException {
 
         final URI resolved = codeStyleBaseUri.resolve(prefsFile);
         return internalOpenStream(resolved);

@@ -32,8 +32,7 @@ public class FormatMojoTest {
         final Map options = DefaultCodeFormatterConstants.getJavaConventionsSettings();
         options.put(JavaCore.COMPILER_SOURCE, "1.7");
         options.put(JavaCore.COMPILER_COMPLIANCE, "1.7");
-        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-                "1.7");
+        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, "1.7");
 
         final CodeFormatter codeFormatter = new DefaultCodeFormatter(options);
 
@@ -48,6 +47,28 @@ public class FormatMojoTest {
     }
 
     @Test
+    public void testFormatSingleFileWithXmlConfiguration() throws Exception {
+
+        final File temp = File.createTempFile("tmp", "");
+        temp.delete();
+        temp.mkdir();
+        FileUtils.copyDirectoryStructure(new File("src/it/javaconvention"), temp);
+
+        final File tempPom = new File(temp, "pom.xml");
+        FileUtils.copyFile(new File("src/test/resources/formatter/pom.xml"), tempPom);
+        final FormatMojo mojo = (FormatMojo) rule.lookupConfiguredMojo(temp, "format");
+        rule.setVariableValueToObject(mojo, "javaFormatterProfileXmlUrl",
+            new File("src/test/resources/formatter/java-code-formatter.xml").toURI().toURL().toString());
+
+        try {
+            mojo.execute();
+        } finally {
+            FileUtils.deleteDirectory(temp);
+        }
+
+    }
+
+    @Test
     public void testFormatString() throws Exception {
 
         final CodeFormatter codeFormatter = new DefaultCodeFormatter(DefaultCodeFormatterConstants.getJavaConventionsSettings());
@@ -57,7 +78,6 @@ public class FormatMojoTest {
         final IDocument document = new Document();
         document.set(content);
         edit.apply(document);
-        System.out.println(document.get());
 
     }
 }

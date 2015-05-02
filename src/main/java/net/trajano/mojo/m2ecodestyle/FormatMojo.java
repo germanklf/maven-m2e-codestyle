@@ -10,6 +10,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.maven.model.FileSet;
 import org.apache.maven.model.Plugin;
@@ -25,12 +31,14 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants;
-import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 @Mojo(name = "format",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
@@ -66,6 +74,19 @@ public class FormatMojo extends AbstractMojo {
     private String codeStyleBaseUrl;
 
     /**
+     * <p>
+     * This is the URL that points to the Java formatter profile XML. The
+     * contents of this will be merged into {@value PreferenceFileName#JDT_CORE}
+     * </p>
+     * <p>
+     * If this is not an absolute URL, it assumes that the value passed in is
+     * referring to something in the classpath.
+     * </p>
+     */
+    @Parameter(required = false)
+    private String javaFormatterProfileXmlUrl;
+
+    /**
      * The Maven Project.
      */
     @Parameter(defaultValue = "${project}",
@@ -92,33 +113,57 @@ public class FormatMojo extends AbstractMojo {
         final Plugin plugin = project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
         if (plugin == null) {
             getLog().warn("Maven compiler plugin is not present, will use the default Java targets");
+        } else {
+            options.put(JavaCore.COMPILER_SOURCE, source);
+            options.put(JavaCore.COMPILER_COMPLIANCE, source);
+            options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
+                target);
         }
-        options.put(JavaCore.COMPILER_SOURCE, source);
-        options.put(JavaCore.COMPILER_COMPLIANCE, source);
-        options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-            target);
 
     }
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException,
+        MojoFailureException {
 
         try {
             final CodeFormatter codeFormatter;
-            if (codeStyleBaseUrl == null) {
+            if (codeStyleBaseUrl == null && javaFormatterProfileXmlUrl == null) {
                 final Map<?, ?> options = DefaultCodeFormatterConstants.getJavaConventionsSettings();
                 addJavaCoreProperties(options);
                 codeFormatter = ToolFactory.createCodeFormatter(options);
             } else {
-                final URI codeStyleBaseUri = new URI(codeStyleBaseUrl);
+
                 final Properties props = new Properties();
 
-                final InputStream prefStream = retrieval.openPreferenceStream(codeStyleBaseUri, "org.eclipse.jdt.core.prefs");
-                if (prefStream == null) {
-                    throw new MojoExecutionException("unable to retrieve org.eclipse.jdt.core.prefs from " + codeStyleBaseUri);
+                if (codeStyleBaseUrl != null) {
+                    final URI codeStyleBaseUri = new URI(codeStyleBaseUrl);
+                    final InputStream prefStream = retrieval.openPreferenceStream(codeStyleBaseUri, "org.eclipse.jdt.core.prefs");
+                    if (prefStream == null) {
+                        throw new MojoExecutionException("unable to retrieve org.eclipse.jdt.core.prefs from " + codeStyleBaseUri);
+                    }
+                    props.load(prefStream);
+                    prefStream.close();
                 }
-                props.load(prefStream);
-                prefStream.close();
+
+                if (javaFormatterProfileXmlUrl != null) {
+
+                    final XPathFactory xpf = XPathFactory.newInstance();
+                    final XPath xp = xpf.newXPath();
+                    final InputStream xmlStream = retrieval.openStream(javaFormatterProfileXmlUrl);
+                    if (xmlStream == null) {
+                        throw new MojoExecutionException("unable to load " + javaFormatterProfileXmlUrl);
+                    }
+                    final Element profileNode = (Element) xp.evaluate("/profiles/profile", new InputSource(xmlStream), XPathConstants.NODE);
+                    xmlStream.close();
+                    final NodeList settings = (NodeList) xp.evaluate("setting", profileNode, XPathConstants.NODESET);
+
+                    for (int i = 0; i < settings.getLength(); ++i) {
+                        final Element setting = (Element) settings.item(i);
+                        props.put(setting.getAttribute("id"), setting.getAttribute("value"));
+                    }
+
+                }
                 addJavaCoreProperties(props);
                 codeFormatter = ToolFactory.createCodeFormatter(props);
             }
@@ -130,14 +175,16 @@ public class FormatMojo extends AbstractMojo {
             testSet.setDirectory(project.getBuild().getTestSourceDirectory());
             testSet.addInclude("**/*.java");
 
-            for (final FileSet xmlFiles : new FileSet[] { sourceSet,
-                testSet }) {
-                final File dir = new File(xmlFiles.getDirectory());
+            for (final FileSet sources : new FileSet[] {
+                sourceSet,
+                testSet
+            }) {
+                final File dir = new File(sources.getDirectory());
                 if (!dir.exists()) {
                     continue;
                 }
                 final org.codehaus.plexus.util.Scanner scanner = buildContext.newScanner(dir, false);
-                scanner.setIncludes(xmlFiles.getIncludes().toArray(new String[0]));
+                scanner.setIncludes(sources.getIncludes().toArray(new String[0]));
                 scanner.scan();
                 for (final String includedFile : scanner.getIncludedFiles()) {
                     final File file = new File(scanner.getBasedir(), includedFile);
@@ -151,6 +198,8 @@ public class FormatMojo extends AbstractMojo {
             throw new MojoExecutionException(e.getMessage(), e);
         } catch (final URISyntaxException e) {
             throw new MojoExecutionException(e.getMessage(), e);
+        } catch (final XPathExpressionException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
         }
     }
 
@@ -163,25 +212,23 @@ public class FormatMojo extends AbstractMojo {
      * @throws MojoFailureException
      */
     public void formatFile(final File file,
-        final CodeFormatter codeFormatter) throws MojoExecutionException, MojoFailureException {
+        final CodeFormatter codeFormatter) throws MojoExecutionException,
+            MojoFailureException {
 
         final IDocument doc = new Document();
         try {
-            //            final Scanner scanner = new Scanner(file);
-            //          final String content = scanner.useDelimiter("\\Z").next();
-
-            final String content = new String(org.eclipse.jdt.internal.compiler.util.Util.getFileCharContent(file, null));
+            final Scanner scanner = new Scanner(file);
+            final String content = scanner.useDelimiter("\\Z").next();
 
             doc.set(content);
-            //            scanner.close();
+            scanner.close();
 
-            final TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, content, 0, content.length(), 0, null);
+            final TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, content, 0, content.length(), 0,
+                null);
 
             if (edit != null) {
                 edit.apply(doc);
             } else {
-                DefaultCodeFormatter.DEBUG = true;
-                System.out.println(((DefaultCodeFormatter) codeFormatter).getDebugOutput());
                 throw new MojoFailureException("unable to format " + file);
             }
 

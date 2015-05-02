@@ -20,8 +20,8 @@ public interface PropertyRetrieval {
      *             I/O error
      */
     void fetchAndMerge(final URI codeStyleBaseUri,
-            final String prefsFile,
-            final File destDir) throws IOException;
+        final String prefsFile,
+        final File destDir) throws IOException;
 
     /**
      * Create an input stream pointing to the prefs file inside the code style
@@ -36,7 +36,7 @@ public interface PropertyRetrieval {
      *             I/O error
      */
     InputStream openPreferenceStream(final URI codeStyleBaseUri,
-            final String prefsFile) throws IOException;
+        final String prefsFile) throws IOException;
 
     /**
      * Create an input stream pointing to the URL. The caller is responsible for
