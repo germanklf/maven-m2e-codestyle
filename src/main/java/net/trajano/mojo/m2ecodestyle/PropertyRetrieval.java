@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public interface PropertyRetrieval {
 
@@ -17,18 +16,16 @@ public interface PropertyRetrieval {
      *            prefs file being processed
      * @param destDir
      *            destination directory containing the prefs file.
-     * @throws URISyntaxException
-     *             thrown when there is invalid input for the URI provided.
      * @throws IOException
      *             I/O error
      */
-        void fetchAndMerge(final URI codeStyleBaseUri,
+    void fetchAndMerge(final URI codeStyleBaseUri,
             final String prefsFile,
-            final File destDir) throws URISyntaxException, IOException;
+            final File destDir) throws IOException;
 
     /**
      * Create an input stream pointing to the prefs file inside the code style
-     * base URI.
+     * base URI. The caller is responsible for closing the stream.
      *
      * @param codeStyleBaseUri
      *            code style base URI
@@ -38,6 +35,18 @@ public interface PropertyRetrieval {
      * @throws IOException
      *             I/O error
      */
-        InputStream openPreferenceStream(final URI codeStyleBaseUri,
+    InputStream openPreferenceStream(final URI codeStyleBaseUri,
             final String prefsFile) throws IOException;
+
+    /**
+     * Create an input stream pointing to the URL. The caller is responsible for
+     * closing the stream.
+     *
+     * @param url
+     *            url to fetch
+     * @return stream or <code>null</code> if the target is not available.
+     * @throws IOException
+     *             I/O error
+     */
+    InputStream openStream(String url) throws IOException;
 }

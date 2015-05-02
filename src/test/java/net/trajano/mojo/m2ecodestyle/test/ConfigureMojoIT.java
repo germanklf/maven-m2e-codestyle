@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -38,7 +37,7 @@ public class ConfigureMojoIT {
     @Rule
     public MojoRule rule = new MojoRule();
 
-    @Test(expected = MojoExecutionException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testBadUrl() throws Exception {
 
         final File testPom = new File("src/test/resources/it-pom.xml");

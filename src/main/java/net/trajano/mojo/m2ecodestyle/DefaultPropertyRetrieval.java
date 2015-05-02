@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -35,8 +34,8 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
      */
     @Override
     public void fetchAndMerge(final URI codeStyleBaseUri,
-        final String prefsFile,
-        final File destDir) throws URISyntaxException, IOException {
+            final String prefsFile,
+            final File destDir) throws IOException {
 
         final File destFile = new File(destDir, prefsFile);
         final Properties props = new Properties();
@@ -60,13 +59,16 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
     }
 
     /**
-     * {@inheritDoc}
+     * Performs the actual work of getting the stream.
+     *
+     * @param resolved
+     *            resolved URI
+     * @return stream or <code>null</code> if the target is not available.
+     * @throws IOException
+     *             I/O error
      */
-    @Override
-    public InputStream openPreferenceStream(final URI codeStyleBaseUri,
-        final String prefsFile) throws IOException {
+    private InputStream internalOpenStream(final URI resolved) throws IOException {
 
-        final URI resolved = codeStyleBaseUri.resolve(prefsFile);
         try {
             if (resolved.isAbsolute()) {
                 return new URLInputStreamFacade(resolved.toURL()).getInputStream();
@@ -76,5 +78,26 @@ public class DefaultPropertyRetrieval implements PropertyRetrieval {
         } catch (final FileNotFoundException e) {
             return null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream openPreferenceStream(final URI codeStyleBaseUri,
+            final String prefsFile) throws IOException {
+
+        final URI resolved = codeStyleBaseUri.resolve(prefsFile);
+        return internalOpenStream(resolved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream openStream(final String url) throws IOException {
+
+        final URI resolved = URI.create(url);
+        return internalOpenStream(resolved);
     }
 }

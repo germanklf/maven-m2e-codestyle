@@ -33,7 +33,7 @@ public class FormatMojoTest {
         options.put(JavaCore.COMPILER_SOURCE, "1.7");
         options.put(JavaCore.COMPILER_COMPLIANCE, "1.7");
         options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-            "1.7");
+                "1.7");
 
         final CodeFormatter codeFormatter = new DefaultCodeFormatter(options);
 
@@ -44,7 +44,6 @@ public class FormatMojoTest {
         final File temp = File.createTempFile("Temp", ".java");
         FileUtils.copyFile(new File("src/test/resources/BadlyFormatted.java"), temp);
         mojo.formatFile(temp, codeFormatter);
-        System.out.println(temp);
         temp.delete();
     }
 
@@ -54,9 +53,6 @@ public class FormatMojoTest {
         final CodeFormatter codeFormatter = new DefaultCodeFormatter(DefaultCodeFormatterConstants.getJavaConventionsSettings());
         final String content = "package x;import java.util.Date;class F { public int  a( Long x) { return Date.get();}}";
         final TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, content, 0, content.length(), 0, null);
-
-        DefaultCodeFormatter.DEBUG = true;
-        System.out.println(((DefaultCodeFormatter) codeFormatter).getDebugOutput());
 
         final IDocument document = new Document();
         document.set(content);
