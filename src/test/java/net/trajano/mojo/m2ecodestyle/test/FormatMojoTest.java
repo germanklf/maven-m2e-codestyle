@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.util.Map;
 
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.MojoRule;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jdt.core.JavaCore;
@@ -45,6 +46,29 @@ public class FormatMojoTest {
         FileUtils.copyFile(new File("src/test/resources/BadlyFormatted.java"), temp);
         mojo.formatFile(temp, codeFormatter);
         temp.delete();
+    }
+
+    @Test(expected = MojoFailureException.class)
+    public void testFormatSingleFileWithBadCode() throws Exception {
+
+        final File temp = File.createTempFile("tmp", "");
+        temp.delete();
+        temp.mkdir();
+        FileUtils.copyDirectoryStructure(new File("src/it/javaconvention"), temp);
+
+        final File tempPom = new File(temp, "pom.xml");
+        FileUtils.copyFile(new File("src/test/resources/formatter/xmlonly-pom.xml"), tempPom);
+        FileUtils.copyFile(new File("src/test/resources/formatter/xmlonly-pom.xml"), new File(temp, "src/main/java/Foo.java"));
+        final FormatMojo mojo = (FormatMojo) rule.lookupConfiguredMojo(temp, "format");
+        rule.setVariableValueToObject(mojo, "javaFormatterProfileXmlUrl",
+            new File("src/test/resources/formatter/java-code-formatter.xml").toURI().toURL().toString());
+
+        try {
+            mojo.execute();
+        } finally {
+            FileUtils.deleteDirectory(temp);
+        }
+
     }
 
     @Test
