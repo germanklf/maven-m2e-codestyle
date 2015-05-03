@@ -245,13 +245,14 @@ public class FormatMojo extends AbstractMojo {
      * Formats an individual file. Made public to allow testing.
      *
      * @param file
+     *            file to process
      * @param codeFormatter
-     * @throws MojoExecutionException
+     *            configured code formatter
      * @throws MojoFailureException
+     *             failed processing individual file
      */
     public void formatFile(final File file,
-        final CodeFormatter codeFormatter) throws MojoExecutionException,
-            MojoFailureException {
+        final CodeFormatter codeFormatter) throws MojoFailureException {
 
         final IDocument doc = new Document();
         try {
@@ -283,7 +284,7 @@ public class FormatMojo extends AbstractMojo {
             }
 
         } catch (final IOException e) {
-            throw new MojoExecutionException("IO Exception" + file, e);
+            throw new MojoFailureException("IO Exception" + file, e);
         } catch (final BadLocationException e) {
             throw new MojoFailureException("Bad Location Exception " + file, e);
         }
