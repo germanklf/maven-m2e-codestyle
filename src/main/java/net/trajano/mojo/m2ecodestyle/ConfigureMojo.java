@@ -44,6 +44,7 @@ public class ConfigureMojo extends AbstractMojo {
      */
     private static final String[] DEFAULT_PREFS = {
         "org.eclipse.core.resources.prefs",
+        "org.eclipse.jdt.launching.prefs",
         PreferenceFileName.JDT_CORE,
         PreferenceFileName.JDT_UI,
         PreferenceFileName.JSDT_CORE,
