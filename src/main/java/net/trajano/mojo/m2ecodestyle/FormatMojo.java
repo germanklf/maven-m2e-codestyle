@@ -1,5 +1,6 @@
 package net.trajano.mojo.m2ecodestyle;
 
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +84,8 @@ public class FormatMojo extends AbstractMojo {
      * referring to something in the classpath.
      * </p>
      */
-    @Parameter(required = false)
+    @Parameter(required = false,
+        property = "codestyle.java.formatter.xml")
     private String javaFormatterProfileXmlUrl;
 
     /**
@@ -97,7 +99,7 @@ public class FormatMojo extends AbstractMojo {
      * Injected property retrieval component.
      */
     @Component
-    private PropertyRetrieval retrieval;
+    private Retrieval retrieval;
 
     @Parameter(property = "maven.compiler.source",
         defaultValue = "1.5")
@@ -122,75 +124,28 @@ public class FormatMojo extends AbstractMojo {
 
     }
 
-    @Override
-    public void execute() throws MojoExecutionException,
-        MojoFailureException {
+    /**
+     * Builds the code formatter.
+     *
+     * @return configured code formatter
+     * @throws MojoExecutionException
+     *             wraps any error that has occurred when building the
+     *             formatter.
+     */
+    private CodeFormatter buildFormatter() throws MojoExecutionException {
 
+        final Map<?, ?> options;
         try {
-            final CodeFormatter codeFormatter;
-            if (codeStyleBaseUrl == null && javaFormatterProfileXmlUrl == null) {
-                final Map<?, ?> options = DefaultCodeFormatterConstants.getJavaConventionsSettings();
+
+            if (isUseJavaConventions()) {
+                options = DefaultCodeFormatterConstants.getJavaConventionsSettings();
                 addJavaCoreProperties(options);
-                codeFormatter = ToolFactory.createCodeFormatter(options);
             } else {
 
-                final Properties props = new Properties();
-
-                if (codeStyleBaseUrl != null) {
-                    final URI codeStyleBaseUri = new URI(codeStyleBaseUrl);
-                    final InputStream prefStream = retrieval.openPreferenceStream(codeStyleBaseUri, "org.eclipse.jdt.core.prefs");
-                    if (prefStream == null) {
-                        throw new MojoExecutionException("unable to retrieve org.eclipse.jdt.core.prefs from " + codeStyleBaseUri);
-                    }
-                    props.load(prefStream);
-                    prefStream.close();
-                }
-
-                if (javaFormatterProfileXmlUrl != null) {
-
-                    final XPathFactory xpf = XPathFactory.newInstance();
-                    final XPath xp = xpf.newXPath();
-                    final InputStream xmlStream = retrieval.openStream(javaFormatterProfileXmlUrl);
-                    if (xmlStream == null) {
-                        throw new MojoExecutionException("unable to load " + javaFormatterProfileXmlUrl);
-                    }
-                    final Element profileNode = (Element) xp.evaluate("/profiles/profile", new InputSource(xmlStream), XPathConstants.NODE);
-                    xmlStream.close();
-                    final NodeList settings = (NodeList) xp.evaluate("setting", profileNode, XPathConstants.NODESET);
-
-                    for (int i = 0; i < settings.getLength(); ++i) {
-                        final Element setting = (Element) settings.item(i);
-                        props.put(setting.getAttribute("id"), setting.getAttribute("value"));
-                    }
-
-                }
-                addJavaCoreProperties(props);
-                codeFormatter = ToolFactory.createCodeFormatter(props);
+                options = buildOptionsFromConfiguration();
             }
-            final FileSet sourceSet = new FileSet();
-            sourceSet.setDirectory(project.getBuild().getSourceDirectory());
-            sourceSet.addInclude("**/*.java");
-
-            final FileSet testSet = new FileSet();
-            testSet.setDirectory(project.getBuild().getTestSourceDirectory());
-            testSet.addInclude("**/*.java");
-
-            for (final FileSet sources : new FileSet[] {
-                sourceSet,
-                testSet
-            }) {
-                final File dir = new File(sources.getDirectory());
-                if (!dir.exists()) {
-                    continue;
-                }
-                final org.codehaus.plexus.util.Scanner scanner = buildContext.newScanner(dir, false);
-                scanner.setIncludes(sources.getIncludes().toArray(new String[0]));
-                scanner.scan();
-                for (final String includedFile : scanner.getIncludedFiles()) {
-                    final File file = new File(scanner.getBasedir(), includedFile);
-                    formatFile(file, codeFormatter);
-                }
-            }
+            addJavaCoreProperties(options);
+            return ToolFactory.createCodeFormatter(options);
 
         } catch (final MalformedURLException e) {
             throw new MojoExecutionException(e.getMessage(), e);
@@ -201,6 +156,89 @@ public class FormatMojo extends AbstractMojo {
         } catch (final XPathExpressionException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates the formatter options from the configuration data provided.
+     *
+     * @return populated options
+     * @throws URISyntaxException
+     *             Problem with the URI syntax
+     * @throws IOException
+     *             I/O problem
+     * @throws MojoExecutionException
+     *             other wrapped Mojo issue
+     * @throws XPathExpressionException
+     *             XPath issue, should not happen.
+     */
+    private Properties buildOptionsFromConfiguration() throws URISyntaxException,
+        IOException,
+        MojoExecutionException,
+        XPathExpressionException {
+
+        final Properties props = new Properties();
+
+        if (codeStyleBaseUrl != null) {
+            final URI codeStyleBaseUri = new URI(codeStyleBaseUrl);
+            final InputStream prefStream = retrieval.openPreferenceStream(codeStyleBaseUri, "org.eclipse.jdt.core.prefs");
+            if (prefStream == null) {
+                throw new MojoExecutionException("unable to retrieve org.eclipse.jdt.core.prefs from " + codeStyleBaseUri);
+            }
+            props.load(prefStream);
+            prefStream.close();
+        }
+
+        if (javaFormatterProfileXmlUrl != null) {
+
+            final XPathFactory xpf = XPathFactory.newInstance();
+            final XPath xp = xpf.newXPath();
+            final InputStream xmlStream = retrieval.openStream(javaFormatterProfileXmlUrl);
+            if (xmlStream == null) {
+                throw new MojoExecutionException("unable to load " + javaFormatterProfileXmlUrl);
+            }
+            final Element profileNode = (Element) xp.evaluate("/profiles/profile", new InputSource(xmlStream), XPathConstants.NODE);
+            xmlStream.close();
+            final NodeList settings = (NodeList) xp.evaluate("setting", profileNode, XPathConstants.NODESET);
+
+            for (int i = 0; i < settings.getLength(); ++i) {
+                final Element setting = (Element) settings.item(i);
+                props.put(setting.getAttribute("id"), setting.getAttribute("value"));
+            }
+
+        }
+        return props;
+    }
+
+    @Override
+    public void execute() throws MojoExecutionException,
+        MojoFailureException {
+
+        final CodeFormatter codeFormatter = buildFormatter();
+        final FileSet sourceSet = new FileSet();
+        sourceSet.setDirectory(project.getBuild().getSourceDirectory());
+        sourceSet.addInclude("**/*.java");
+
+        final FileSet testSet = new FileSet();
+        testSet.setDirectory(project.getBuild().getTestSourceDirectory());
+        testSet.addInclude("**/*.java");
+
+        for (final FileSet sources : new FileSet[] {
+            sourceSet,
+            testSet
+        }) {
+            final File dir = new File(sources.getDirectory());
+            if (!dir.exists()) {
+                continue;
+            }
+            final org.codehaus.plexus.util.Scanner scanner = buildContext.newScanner(dir, false);
+            scanner.setIncludes(sources.getIncludes().toArray(new String[0]));
+            scanner.scan();
+            for (final String includedFile : scanner.getIncludedFiles()) {
+                final File file = new File(scanner.getBasedir(), includedFile);
+                formatFile(file, codeFormatter);
+            }
+        }
+
     }
 
     /**
@@ -232,7 +270,7 @@ public class FormatMojo extends AbstractMojo {
                 throw new MojoFailureException("unable to format " + file);
             }
 
-            final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(buildContext.newFileOutputStream(file)));
+            final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new EolNormalizingStream(buildContext.newFileOutputStream(file))));
             try {
 
                 out.write(doc.get());
@@ -240,10 +278,7 @@ public class FormatMojo extends AbstractMojo {
 
             } finally {
 
-                try {
-                    out.close();
-                } catch (final IOException e) {
-                }
+                out.close();
 
             }
 
@@ -252,5 +287,17 @@ public class FormatMojo extends AbstractMojo {
         } catch (final BadLocationException e) {
             throw new MojoFailureException("Bad Location Exception " + file, e);
         }
+    }
+
+    /**
+     * Checks if the standard java conventions formatter should be used. This is
+     * determined when {@link #codeStyleBaseUrl} and
+     * {@link #javaFormatterProfileXmlUrl} are both null.
+     *
+     * @return
+     */
+    private boolean isUseJavaConventions() {
+
+        return codeStyleBaseUrl == null && javaFormatterProfileXmlUrl == null;
     }
 }

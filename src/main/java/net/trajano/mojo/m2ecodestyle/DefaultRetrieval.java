@@ -14,15 +14,22 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.codehaus.plexus.util.io.URLInputStreamFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
- * Default implementation of {@link PropertyRetrieval}
+ * Default implementation of {@link Retrieval}
  */
 @Singleton
 @Named
-public class DefaultPropertyRetrieval implements
-    PropertyRetrieval {
+public class DefaultRetrieval implements
+    Retrieval {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultRetrieval.class);
 
     /**
      * Build context.
@@ -77,6 +84,7 @@ public class DefaultPropertyRetrieval implements
                 return Thread.currentThread().getContextClassLoader().getResourceAsStream(resolved.toString());
             }
         } catch (final FileNotFoundException e) {
+            LOG.debug(e.getMessage(), e);
             return null;
         }
     }

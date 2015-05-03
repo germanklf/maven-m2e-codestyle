@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-public interface PropertyRetrieval {
+public interface Retrieval {
 
     /**
      * Fetch and merge the preferences file.

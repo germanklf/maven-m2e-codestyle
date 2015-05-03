@@ -20,5 +20,6 @@ public final class PreferenceFileName {
      * Prevent instantiation of constants class.
      */
     private PreferenceFileName() {
+
     }
 }

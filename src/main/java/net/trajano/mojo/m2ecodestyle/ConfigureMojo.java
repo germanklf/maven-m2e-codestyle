@@ -106,7 +106,8 @@ public class ConfigureMojo extends AbstractMojo {
      * referring to something in the classpath.
      * </p>
      */
-    @Parameter(required = false)
+    @Parameter(required = false,
+        property = "codestyle.java.formatter.xml")
     private String javaFormatterProfileXmlUrl;
 
     /**
@@ -175,7 +176,7 @@ public class ConfigureMojo extends AbstractMojo {
      * Injected property retrieval component.
      */
     @Component
-    private PropertyRetrieval retrieval;
+    private Retrieval retrieval;
 
     /**
      * {@inheritDoc}
