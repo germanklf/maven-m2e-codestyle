@@ -1,6 +1,5 @@
 package net.trajano.mojo.m2ecodestyle.test;
 
-
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -62,6 +61,26 @@ public class FormatMojoTest {
         final FormatMojo mojo = (FormatMojo) rule.lookupConfiguredMojo(temp, "format");
         rule.setVariableValueToObject(mojo, "javaFormatterProfileXmlUrl",
             new File("src/test/resources/formatter/java-code-formatter.xml").toURI().toURL().toString());
+
+        try {
+            mojo.execute();
+        } finally {
+            FileUtils.deleteDirectory(temp);
+        }
+
+    }
+
+    @Test
+    public void testFormatSingleFileWithJavaConfiguration() throws Exception {
+
+        final File temp = File.createTempFile("tmp", "");
+        temp.delete();
+        temp.mkdir();
+        FileUtils.copyDirectoryStructure(new File("src/it/javaconvention"), temp);
+
+        final File tempPom = new File(temp, "pom.xml");
+        FileUtils.copyFile(new File("src/test/resources/formatter/pom.xml"), tempPom);
+        final FormatMojo mojo = (FormatMojo) rule.lookupConfiguredMojo(temp, "format");
 
         try {
             mojo.execute();
