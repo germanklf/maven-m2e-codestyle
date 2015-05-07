@@ -48,6 +48,7 @@ public class ConfigureMojo extends AbstractMojo {
         "org.eclipse.core.resources.prefs",
         "org.eclipse.jdt.launching.prefs",
         "org.eclipse.wst.xml.core.prefs",
+        "org.eclipse.wst.validation.prefs",
         PreferenceFileName.JDT_CORE,
         PreferenceFileName.JDT_UI,
         PreferenceFileName.JSDT_CORE,
