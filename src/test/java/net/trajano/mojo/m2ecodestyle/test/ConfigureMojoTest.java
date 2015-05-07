@@ -219,6 +219,11 @@ public class ConfigureMojoTest {
             final File settingsFolder = new File(tmp, "settings");
             rule.setVariableValueToObject(mojo, "destDir", settingsFolder);
             rule.setVariableValueToObject(mojo, "javaFormatterProfileXmlUrl", new File("src/test/resources/codestyle/eclipse/java-code-formatter.xml").toURI().toASCIIString());
+            rule.setVariableValueToObject(mojo, "javaCleanupProfileXmlUrl", new File("src/test/resources/codestyle/eclipse/java-cleanup.xml").toURI().toASCIIString());
+            rule.setVariableValueToObject(mojo, "javaTemplatesXmlUrl", new File("src/test/resources/codestyle/eclipse/java-templates.xml").toURI().toASCIIString());
+            rule.setVariableValueToObject(mojo, "javaScriptFormatterProfileXmlUrl", new File("src/test/resources/codestyle/eclipse/javascript-code-formatter.xml").toURI().toASCIIString());
+            rule.setVariableValueToObject(mojo, "javaScriptCleanupProfileXmlUrl", new File("src/test/resources/codestyle/eclipse/javascript-cleanup.xml").toURI().toASCIIString());
+            rule.setVariableValueToObject(mojo, "javaScriptTemplatesXmlUrl", new File("src/test/resources/codestyle/eclipse/javascript-templates.xml").toURI().toASCIIString());
             mojo.execute();
             mojo.execute();
             assertTrue(tmp.exists());
