@@ -50,8 +50,7 @@ public class ConfigureMojo extends AbstractMojo {
         PreferenceFileName.JDT_CORE,
         PreferenceFileName.JDT_UI,
         PreferenceFileName.JSDT_CORE,
-        PreferenceFileName.JSDT_UI,
-    };
+        PreferenceFileName.JSDT_UI, };
 
     /**
      * Build context.
@@ -287,6 +286,9 @@ public class ConfigureMojo extends AbstractMojo {
         try {
             final XPath xp = xpf.newXPath();
             final InputStream xmlStream = retrieval.openStream(url);
+            if (xmlStream == null) {
+                throw new MojoExecutionException("unable to open url: " + url);
+            }
             final Element profileNode = (Element) xp.evaluate("/profiles/profile", new InputSource(xmlStream), XPathConstants.NODE);
             xmlStream.close();
             final NodeList settings = (NodeList) xp.evaluate("setting", profileNode, XPathConstants.NODESET);
@@ -295,7 +297,7 @@ public class ConfigureMojo extends AbstractMojo {
             final FileInputStream prefsInputStream = new FileInputStream(settingsFile);
             prop.load(prefsInputStream);
             prefsInputStream.close();
-            for (int i = 1; i <= settings.getLength(); ++i) {
+            for (int i = 0; i < settings.getLength(); ++i) {
                 final Element setting = (Element) settings.item(i);
                 prop.put(setting.getAttribute("id"), setting.getAttribute("value"));
             }

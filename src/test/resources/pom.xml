@@ -19,7 +19,7 @@
 					<dependency>
 						<groupId>net.trajano</groupId>
 						<artifactId>coding-standards</artifactId>
-						<version>2.0.0</version>
+						<version>2.0.2-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>

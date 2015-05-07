@@ -197,4 +197,34 @@ public class ConfigureMojoTest {
             FileUtils.deleteDirectory(tmp);
         }
     }
+
+    /**
+     * This tests when the settings files already exists.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testWithXmlConfiguration1() throws Exception {
+
+        System.setProperty("eclipse.startTime", String.valueOf(System.currentTimeMillis()));
+        final File testPom = new File("src/test/resources/pom.xml");
+        assertTrue(testPom.exists());
+
+        final File tmp = File.createTempFile("test", "test");
+        tmp.delete();
+        try {
+            tmp.mkdir();
+            final ConfigureMojo mojo = (ConfigureMojo) rule.lookupMojo("configure", testPom);
+            assertNotNull(mojo);
+            final File settingsFolder = new File(tmp, "settings");
+            rule.setVariableValueToObject(mojo, "destDir", settingsFolder);
+            rule.setVariableValueToObject(mojo, "javaFormatterProfileXmlUrl", new File("src/test/resources/codestyle/eclipse/java-code-formatter.xml").toURI().toASCIIString());
+            mojo.execute();
+            mojo.execute();
+            assertTrue(tmp.exists());
+            assertTrue("Missing org.eclipse.jdt.core.prefs", new File(settingsFolder, "org.eclipse.jdt.core.prefs").exists());
+        } finally {
+            FileUtils.deleteDirectory(tmp);
+        }
+    }
 }
