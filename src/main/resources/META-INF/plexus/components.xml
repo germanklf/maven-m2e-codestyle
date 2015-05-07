@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-set>
+    <components>
+        <component>
+            <role>net.trajano.mojo.m2ecodestyle.Retrieval</role>
+            <implementation>net.trajano.mojo.m2ecodestyle.internal.DefaultRetrieval</implementation>
+        </component>
+    </components>
+</component-set>

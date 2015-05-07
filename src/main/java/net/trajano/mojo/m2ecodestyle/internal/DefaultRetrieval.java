@@ -1,4 +1,5 @@
-package net.trajano.mojo.m2ecodestyle;
+package net.trajano.mojo.m2ecodestyle.internal;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,19 +11,17 @@ import java.net.URI;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.codehaus.plexus.util.io.URLInputStreamFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import net.trajano.mojo.m2ecodestyle.Retrieval;
+
 /**
  * Default implementation of {@link Retrieval}
  */
-@Singleton
-@Named
 public class DefaultRetrieval implements
     Retrieval {
 
