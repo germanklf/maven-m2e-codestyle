@@ -259,7 +259,6 @@
                                                 <goals>
                                                     <goal>descriptor</goal>
                                                     <goal>helpmojo</goal>
-                                                    <goal>addPluginArtifactMetadata</goal>
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
