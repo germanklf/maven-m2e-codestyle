@@ -52,7 +52,8 @@ public class ConfigureMojo extends AbstractMojo {
         PreferenceFileName.JDT_CORE,
         PreferenceFileName.JDT_UI,
         PreferenceFileName.JSDT_CORE,
-        PreferenceFileName.JSDT_UI, };
+        PreferenceFileName.JSDT_UI,
+    };
 
     /**
      * Build context.

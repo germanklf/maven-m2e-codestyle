@@ -1,6 +1,5 @@
 package net.trajano.mojo.m2ecodestyle.internal;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

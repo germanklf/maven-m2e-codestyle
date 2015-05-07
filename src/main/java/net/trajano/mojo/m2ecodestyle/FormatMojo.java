@@ -1,6 +1,5 @@
 package net.trajano.mojo.m2ecodestyle;
 
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;

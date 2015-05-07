@@ -15,12 +15,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import net.trajano.commons.testing.UtilityClassTestUtil;
 import net.trajano.mojo.m2ecodestyle.ConfigureMojo;
+import net.trajano.mojo.m2ecodestyle.internal.PreferenceFileName;
 
 public class ConfigureMojoTest {
 
     @Rule
     public MojoRule rule = new MojoRule();
+
+    @Test
+    public void coverUtilityClasses() {
+
+        UtilityClassTestUtil.assertUtilityClassWellDefined(PreferenceFileName.class);
+    }
 
     @Test
     public void testDefault() throws Exception {
