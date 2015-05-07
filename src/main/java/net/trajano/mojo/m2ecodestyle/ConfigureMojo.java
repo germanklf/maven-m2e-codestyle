@@ -30,6 +30,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import net.trajano.mojo.m2ecodestyle.internal.PreferenceFileName;
+
 /**
  * Configures Eclipse before any builds.
  */

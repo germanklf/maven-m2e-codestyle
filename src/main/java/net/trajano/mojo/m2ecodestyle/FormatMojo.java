@@ -41,6 +41,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+import net.trajano.mojo.m2ecodestyle.internal.EolNormalizingStream;
+import net.trajano.mojo.m2ecodestyle.internal.PreferenceFileName;
+
 @Mojo(name = "format",
     defaultPhase = LifecyclePhase.PROCESS_SOURCES,
     threadSafe = true,

@@ -1,4 +1,4 @@
-package net.trajano.mojo.m2ecodestyle;
+package net.trajano.mojo.m2ecodestyle.internal;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;

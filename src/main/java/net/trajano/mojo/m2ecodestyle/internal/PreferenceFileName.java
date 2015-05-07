@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.trajano.mojo.m2ecodestyle;
+package net.trajano.mojo.m2ecodestyle.internal;
 
 /**
  * Constant class for preference file names.
