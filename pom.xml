@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.trajano</groupId>
         <artifactId>trajano</artifactId>
-        <version>11.1</version>
+        <version>13</version>
     </parent>
     <groupId>net.trajano.mojo</groupId>
     <artifactId>m2e-codestyle-maven-plugin</artifactId>
@@ -27,8 +27,8 @@
     </distributionManagement>
     <properties>
         <jdk.version>1.6</jdk.version>
-        <maven.version>3.3.3</maven.version>
-        <surefire-plugin.version>2.18.1</surefire-plugin.version>
+        <maven.version>3.3.9</maven.version>
+        <surefire-plugin.version>2.19.1</surefire-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.23</version>
         </dependency>
         <dependency>
             <groupId>org.sonatype.plexus</groupId>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.23</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.4</version>
+            <version>3.5</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -108,39 +108,13 @@
         </pluginManagement>
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <executions>
-                    <execution>
-                        <id>attach-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-metadata</artifactId>
-                <version>1.6</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>1.7.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
+                <version>3.5</version>
                 <executions>
                     <execution>
                         <id>default-descriptor</id>
@@ -159,41 +133,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>integration-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>verify</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.4.201502262128</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
-                <version>2.0.0</version>
                 <executions>
                     <execution>
                         <id>integration-test</id>
