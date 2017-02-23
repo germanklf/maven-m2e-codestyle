@@ -1,0 +1,22 @@
+language: java
+jdk:
+  - oraclejdk8
+sudo: false
+cache:
+  directories:
+  - "$HOME/.m2"
+  - "$HOME/.sonar/cache"
+addons:
+  sonarqube: true
+env:
+  global:
+  - secure: W0xXtNqY7Eeu3u2LXaugdXhhv1UInxb1+/r03eHsZRKNemlOI2WWUOcC1tV0hN69F+aHtHvpclxlcNMBT/Rm/N+n+aSqRUVfgVbGwzV+1aCMoM2h+ie1E7S5KT0o16fbxbVbRR3CjpoQVdc6vQ7PJV+3yqRrCgFHcUNl4yEFiP4=
+  - secure: hJmlJ4yxWKR/AI0i8EPUjZOyTbprgwLrIWsb5po121rLS6ZidNBI2wiHHkeLWWiGrYbQYWpsR0zCa3De7EW8/90hDfA1PPtvKD/P/c1NuaGHPK6NNP0sz3+m4rqw6yoBVF8cPs7IkvPKBNAXcltA2UOdNEBhFtquhMtyPIkyabQ=
+install:
+- mvn dependency:go-offline
+before_script:
+- mvn clean 
+script:
+- mvn install site
+after_success:
+- mvn sonar:sonar
