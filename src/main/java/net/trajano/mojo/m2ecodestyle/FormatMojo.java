@@ -267,12 +267,8 @@ public class FormatMojo extends AbstractMojo {
             final TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, content, 0, content.length(), 0,
                 null);
 
-            if (edit != null) {
-                edit.apply(doc);
-            } else {
-                throw new MojoFailureException("unable to format " + file);
-            }
-
+            edit.apply(doc);
+            
             final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new EolNormalizingStream(buildContext.newFileOutputStream(file))));
             try {
 
