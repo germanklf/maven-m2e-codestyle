@@ -8,10 +8,10 @@
     </parent>
     <groupId>net.trajano.mojo</groupId>
     <artifactId>m2e-codestyle-maven-plugin</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Maven M2E Code Style plugin</name>
-    <description>M2E 1.0+ compatible to configure code-style and save-actions for Eclipse.</description>
+    <description>M2E 1.0+ compatible to configure code-style and save-actions for Eclipse.  It provides JDT based formatter that runs from a Maven build as well.</description>
     <url>http://site.trajano.net/m2e-codestyle-maven-plugin</url>
     <scm>
         <connection>scm:git:https://github.com/trajano/${project.artifactId}</connection>
