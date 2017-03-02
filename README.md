@@ -1,6 +1,8 @@
 M2E Code Style Maven Plugin
 ===========================
 
+[![Build Status](https://travis-ci.org/trajano/m2e-codestyle-maven-plugin.svg?branch=master)](https://travis-ci.org/trajano/m2e-codestyle-maven-plugin) [![Quality Gate](https://sonarqube.com/api/badges/gate?key=net.trajano.mojo:m2e-codestyle-maven-plugin)](https://sonarqube.com/dashboard?id=net.trajano.mojo:m2e-codestyle-maven-plugin)
+
 This was originally a fork of the [maven-m2e-codestyle-plugin][1] but is
 now rewritten from scratch using more modern Maven plugin API techniques.
 
