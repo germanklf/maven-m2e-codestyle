@@ -20,14 +20,15 @@
     </scm>
     <distributionManagement>
         <site>
-            <id>gh-pages</id>
-            <name>Trajano GitHub Pages</name>
-            <url>github:http://site.trajano.net/${project.artifactId}/</url>
+            <id>trajano-site</id>
+            <name>Trajano Maven Sites</name>
+            <url>sftp://site.trajano.net:6022/s/${module.id}/</url>
         </site>
     </distributionManagement>
     <properties>
         <jdk.version>1.6</jdk.version>
         <maven.version>3.3.9</maven.version>
+        <module.id>m2e-codestyle-maven-plugin</module.id>
         <surefire-plugin.version>2.19.1</surefire-plugin.version>
     </properties>
     <dependencies>
@@ -161,6 +162,13 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.12</version>
+            </extension>
+        </extensions>
     </build>
     <reporting>
         <plugins>
