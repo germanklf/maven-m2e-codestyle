@@ -289,11 +289,11 @@ public class FormatMojo extends AbstractMojo {
     }
 
     /**
-     * Checks if the standard java conventions formatter should be used. This is
+     * Checks if the standard Java conventions formatter should be used. This is
      * determined when {@link #codeStyleBaseUrl} and
      * {@link #javaFormatterProfileXmlUrl} are both null.
      *
-     * @return
+     * @return true if standard Java conventions should be used.
      */
     private boolean isUseJavaConventions() {
 
