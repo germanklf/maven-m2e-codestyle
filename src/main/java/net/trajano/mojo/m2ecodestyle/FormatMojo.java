@@ -268,7 +268,7 @@ public class FormatMojo extends AbstractMojo {
                 null);
 
             edit.apply(doc);
-            
+
             final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new EolNormalizingStream(buildContext.newFileOutputStream(file))));
             try {
 
