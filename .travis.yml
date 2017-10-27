@@ -13,21 +13,34 @@ addons:
   apt:
     packages:
     - graphviz
-  sonarqube: true
+  sonarcloud:
+    token:
+      secure: l45J1abRLCWp3CxqT+x8J76COCsjY6HUuBgHeycgrtkwSZyjV595+CncHAmHaSBuTSxc0FH3npNLOUDZyIvXXDxYvJ0nALKdvF6tsT4BTqABNl0/PS2WaBOk3FHDs50nd16jGpC5zV+NPIus+8YarjVMmK7z9nYpv23MCoGpXYk=
+  ssh_known_hosts:
+  - github.com
+  - site.trajano.net:6022
 env:
   global:
-  - secure: W0xXtNqY7Eeu3u2LXaugdXhhv1UInxb1+/r03eHsZRKNemlOI2WWUOcC1tV0hN69F+aHtHvpclxlcNMBT/Rm/N+n+aSqRUVfgVbGwzV+1aCMoM2h+ie1E7S5KT0o16fbxbVbRR3CjpoQVdc6vQ7PJV+3yqRrCgFHcUNl4yEFiP4=
-  - secure: hJmlJ4yxWKR/AI0i8EPUjZOyTbprgwLrIWsb5po121rLS6ZidNBI2wiHHkeLWWiGrYbQYWpsR0zCa3De7EW8/90hDfA1PPtvKD/P/c1NuaGHPK6NNP0sz3+m4rqw6yoBVF8cPs7IkvPKBNAXcltA2UOdNEBhFtquhMtyPIkyabQ=
+    secure: f4I6mz3SxSKIRECe3I+wA/HWmWgwvAqGQdjeTpi+tBOmjyz6GE5rbY1ozUbdHzBvog2IJAzbfRiUF5PEzhpNzqyIRqrxKIy1ahlnGzxV9MIn3hUBzLStvSMKlIJIrPlHf77+1bXNqOqpZzxj2GLlgs34ey8QkITmgPKIaPm/eV4=
+before_install:
+- openssl aes-256-cbc -K $encrypted_95322324a4e0_key -iv $encrypted_95322324a4e0_iv
+  -in deploy-keys.tar.enc -out deploy-keys.tar -d
+- tar xf deploy-keys.tar -C $HOME
 install:
-- mvn dependency:go-offline
+- tar xf deploy-keys.tar -C $HOME && chmod go-rwx -R $HOME/.m2 $HOME/.ssh
 before_script:
 - mvn clean
 script:
-- mvn install site
-after_success:
-- mvn sonar:sonar
-- if [[ ! $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then mvn deploy site-deploy ; fi
-before_install:
-- openssl aes-256-cbc -K $encrypted_55794f701fd4_key -iv $encrypted_55794f701fd4_iv
-  -in deploy-keys.tar.enc -out deploy-keys.tar -d
-- tar xf deploy-keys.tar -C $HOME
+- mvn package sonar:sonar -Dmaven.test.failure.ignore=true
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: mvn -e deploy && mvn -e site-deploy
+  on:
+    branch: master
+- provider: script
+  skip_cleanup: true
+  script: printf 'scm.tag=%1s\nscm.url=scm:git:https://git@github.com/%2s.git' "${TRAVIS_TAG}"
+    "${TRAVIS_REPO_SLUG}" > release.properties && mvn release:perform
+  on:
+    tags: true
