@@ -17,5 +17,9 @@ In addition it adds a `format` goal that utilizes the Eclipse JDT
 formatter to format the code.  It is not recommended that the `format`
 goal be executed inside M2E and is ignored by default.
 
+## JDK 8 now required
+
+As of version 3.0.0 JDK 8 is required to use this plugin.  This uses Eclipse JDT 3.3.0 which also uses JDK 8.
+
 [1]: https://github.com/germanklf/maven-m2e-codestyle
 [2]: http://site.trajano.net/coding-standards
