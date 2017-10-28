@@ -25,7 +25,7 @@ public class ConfigureMojoTest {
     public MojoRule rule = new MojoRule();
 
     @Test
-    public void coverUtilityClasses() {
+    public void coverUtilityClasses() throws ReflectiveOperationException {
 
         UtilityClassTestUtil.assertUtilityClassWellDefined(PreferenceFileName.class);
     }

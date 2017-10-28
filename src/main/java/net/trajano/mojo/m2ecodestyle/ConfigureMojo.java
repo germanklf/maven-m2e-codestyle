@@ -63,9 +63,9 @@ public class ConfigureMojo extends AbstractMojo {
 
     /**
      * <p>
-     * This is the URL that points to the base URL where the mergable prefs
-     * files are located. If this is not provided, then merging of property
-     * files is not performed.
+     * This is the URL that points to the base URL where the mergable prefs files
+     * are located. If this is not provided, then merging of property files is not
+     * performed.
      * </p>
      * <p>
      * The URL <b>must</b> end with a trailing slash as the names referenced by
@@ -89,8 +89,8 @@ public class ConfigureMojo extends AbstractMojo {
 
     /**
      * <p>
-     * This is the URL that points to the Java cleanup profile XML. The contents
-     * of this will be merged into "org.eclipse.jdt.ui.prefs"
+     * This is the URL that points to the Java cleanup profile XML. The contents of
+     * this will be merged into "org.eclipse.jdt.ui.prefs"
      * </p>
      * <p>
      * If this is not an absolute URL, it assumes that the value passed in is
@@ -102,8 +102,8 @@ public class ConfigureMojo extends AbstractMojo {
 
     /**
      * <p>
-     * This is the URL that points to the Java formatter profile XML. The
-     * contents of this will be merged into {@value PreferenceFileName#JDT_CORE}
+     * This is the URL that points to the Java formatter profile XML. The contents
+     * of this will be merged into {@value PreferenceFileName#JDT_CORE}
      * </p>
      * <p>
      * If this is not an absolute URL, it assumes that the value passed in is
@@ -130,8 +130,7 @@ public class ConfigureMojo extends AbstractMojo {
     /**
      * <p>
      * This is the URL that points to the JavaScript formatter profile XML. The
-     * contents of this will be merged into
-     * {@value PreferenceFileName#JSDT_CORE}.
+     * contents of this will be merged into {@value PreferenceFileName#JSDT_CORE}.
      * </p>
      * <p>
      * If this is not an absolute URL, it assumes that the value passed in is
@@ -156,8 +155,8 @@ public class ConfigureMojo extends AbstractMojo {
 
     /**
      * <p>
-     * This is the URL that points to the Java formatter profile XML. The
-     * contents of this will be merged into "org.eclipse.jdt.core.prefs"
+     * This is the URL that points to the Java formatter profile XML. The contents
+     * of this will be merged into "org.eclipse.jdt.core.prefs"
      * </p>
      * <p>
      * If this is not an absolute URL, it assumes that the value passed in is
@@ -168,10 +167,10 @@ public class ConfigureMojo extends AbstractMojo {
     private String javaTemplatesXmlUrl;
 
     /**
-     * A list of <em>prefs</em> files to load from the source. The contents of
-     * the <em>prefs</em> files will be merged with the existing <em>prefs</em>
-     * files if they already exist. This defaults to {@value #DEFAULT_PREFS}
-     * which are known <em>prefs</em> relating to code styles.
+     * A list of <em>prefs</em> files to load from the source. The contents of the
+     * <em>prefs</em> files will be merged with the existing <em>prefs</em> files if
+     * they already exist. This defaults to {@value #DEFAULT_PREFS} which are known
+     * <em>prefs</em> relating to code styles.
      */
     @Parameter(required = false)
     private List<String> prefsFiles;
@@ -297,9 +296,9 @@ public class ConfigureMojo extends AbstractMojo {
             final NodeList settings = (NodeList) xp.evaluate("setting", profileNode, XPathConstants.NODESET);
             final Properties prop = new Properties();
             final File settingsFile = new File(destDir, prefsFile);
-            final FileInputStream prefsInputStream = new FileInputStream(settingsFile);
-            prop.load(prefsInputStream);
-            prefsInputStream.close();
+            try (final FileInputStream prefsInputStream = new FileInputStream(settingsFile)) {
+                prop.load(prefsInputStream);
+            }
             for (int i = 0; i < settings.getLength(); ++i) {
                 final Element setting = (Element) settings.item(i);
                 prop.put(setting.getAttribute("id"), setting.getAttribute("value"));
@@ -333,20 +332,20 @@ public class ConfigureMojo extends AbstractMojo {
         try {
             final Properties prop = new Properties();
             final File settingsFile = new File(destDir, prefsFile);
-            final FileInputStream prefsInputStream = new FileInputStream(settingsFile);
-            prop.load(prefsInputStream);
-            prefsInputStream.close();
+            try (final FileInputStream prefsInputStream = new FileInputStream(settingsFile)) {
+                prop.load(prefsInputStream);
+            }
 
-            final InputStream dataStream = retrieval.openStream(url);
-            final Scanner scanner = new Scanner(dataStream);
-            final String contents = scanner.useDelimiter("\\A").next();
-            scanner.close();
-            dataStream.close();
+            final String contents;
+            try (final InputStream dataStream = retrieval.openStream(url);
+                final Scanner scanner = new Scanner(dataStream)) {
+                contents = scanner.useDelimiter("\\A").next();
+            }
 
-            final FileOutputStream fileOutputStream = new FileOutputStream(settingsFile);
-            prop.setProperty(key, contents);
-            prop.store(fileOutputStream, "Generated by m2e-codestyle-plugin");
-            fileOutputStream.close();
+            try (final FileOutputStream fileOutputStream = new FileOutputStream(settingsFile)) {
+                prop.setProperty(key, contents);
+                prop.store(fileOutputStream, "Generated by m2e-codestyle-plugin");
+            }
         } catch (final IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }

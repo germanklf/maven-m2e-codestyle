@@ -78,8 +78,8 @@ public class FormatMojo extends AbstractMojo {
 
     /**
      * <p>
-     * This is the URL that points to the Java formatter profile XML. The
-     * contents of this will be merged into {@value PreferenceFileName#JDT_CORE}
+     * This is the URL that points to the Java formatter profile XML. The contents
+     * of this will be merged into {@value PreferenceFileName#JDT_CORE}
      * </p>
      * <p>
      * If this is not an absolute URL, it assumes that the value passed in is
@@ -116,7 +116,7 @@ public class FormatMojo extends AbstractMojo {
 
         final Plugin plugin = project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
         if (plugin == null) {
-            getLog().warn("Maven compiler plugin is not present, will use the default Java targets");
+            getLog().debug("Maven compiler plugin is not present, will use the default Java targets");
         } else {
             options.put(JavaCore.COMPILER_SOURCE, source);
             options.put(JavaCore.COMPILER_COMPLIANCE, source);
@@ -131,8 +131,7 @@ public class FormatMojo extends AbstractMojo {
      *
      * @return configured code formatter
      * @throws MojoExecutionException
-     *             wraps any error that has occurred when building the
-     *             formatter.
+     *             wraps any error that has occurred when building the formatter.
      */
     private CodeFormatter buildFormatter() throws MojoExecutionException {
 
@@ -258,26 +257,21 @@ public class FormatMojo extends AbstractMojo {
 
         final IDocument doc = new Document();
         try {
-            final Scanner scanner = new Scanner(file);
-            final String content = scanner.useDelimiter("\\Z").next();
+            final String content;
+            try (final Scanner scanner = new Scanner(file)) {
+                content = scanner.useDelimiter("\\Z").next();
 
-            doc.set(content);
-            scanner.close();
-
+                doc.set(content);
+            }
             final TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS, content, 0, content.length(), 0,
                 null);
 
             edit.apply(doc);
 
-            final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new EolNormalizingStream(buildContext.newFileOutputStream(file))));
-            try {
+            try (final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new EolNormalizingStream(buildContext.newFileOutputStream(file))))) {
 
                 out.write(doc.get());
                 out.flush();
-
-            } finally {
-
-                out.close();
 
             }
 
